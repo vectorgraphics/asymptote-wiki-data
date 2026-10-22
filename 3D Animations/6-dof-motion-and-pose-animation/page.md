@@ -1,0 +1,1 @@
+Demonstrate how to define rigid-body motion using 3 translation values $(x, y, z)$ and 3 orientation values (roll, pitch, and yaw). The slide bar controls the interpolation of the motion: translation is interpolated linearly, while orientation follows an axis-angle motion interpretation implemented via **Rodrigues' Rotation Formula** (keeping the axis fixed).
