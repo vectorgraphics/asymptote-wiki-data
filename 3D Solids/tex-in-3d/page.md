@@ -1,0 +1,1 @@
+$$\int_{-\infty}^{+\infty} e^{-\alpha x^2}\,dx=\sqrt{\frac{\pi}{\alpha}}$$.
