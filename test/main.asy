@@ -1,2 +1,2 @@
 size(10cm);
-fill(unitcircle);
+draw(unitcircle,red);
