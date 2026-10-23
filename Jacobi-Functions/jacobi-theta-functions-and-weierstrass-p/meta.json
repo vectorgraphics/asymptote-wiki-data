@@ -1,0 +1,14 @@
+{
+  "id": "jacobi-theta-functions-and-weierstrass-p",
+  "title": "Jacobi theta functions and Weierstrass p-function",
+  "author": "Stephane Laurent",
+  "tags": [
+    "modules",
+    "elliptic functions",
+    "theta",
+    "Weierstrass"
+  ],
+  "created": "2026-10-23T08:17:21.967638+00:00",
+  "modified": "2026-10-23T08:18:25.364550+00:00",
+  "content_hash": "ab2c5642ffabaf5081514f10a5abdb9b319b45ef7997ebb72bdb3e9ec16b021f"
+}

@@ -1,0 +1,1 @@
+Implementation of Jacobi theta functions ($\theta_1$ through $\theta_4$), their logarithmic derivatives, and the Weierstrass elliptic $\wp$ function. Contributed by [Stéphane Laurent](https://github.com/stla) via [asymptote issue #318](https://github.com/vectorgraphics/asymptote/issues/318).
