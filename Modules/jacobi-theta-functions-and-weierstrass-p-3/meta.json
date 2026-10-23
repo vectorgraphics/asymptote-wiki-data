@@ -1,5 +1,5 @@
 {
-  "id": "jacobi-theta-functions-and-weierstrass-p",
+  "id": "jacobi-theta-functions-and-weierstrass-p-3",
   "title": "Jacobi theta functions and Weierstrass p-function",
   "author": "Stephane Laurent",
   "tags": [
@@ -8,7 +8,7 @@
     "theta",
     "Weierstrass"
   ],
-  "created": "2026-10-23T07:49:26.172774+00:00",
-  "modified": "2026-10-23T07:49:26.172802+00:00",
+  "created": "2026-10-23T07:53:38.970634+00:00",
+  "modified": "2026-10-23T07:53:38.970654+00:00",
   "content_hash": "ab2c5642ffabaf5081514f10a5abdb9b319b45ef7997ebb72bdb3e9ec16b021f"
 }
