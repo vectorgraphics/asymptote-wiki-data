@@ -203,11 +203,29 @@ window.addEventListener('load',function() {
 
     document.head.appendChild(hide);
 
+    // Toggle button in the top-left corner (English)
+    let toggleBtn=document.createElement('button');
+    toggleBtn.innerHTML='⚙️ Panel';
+    toggleBtn.style.cssText=
+        'position:fixed;'+
+        'top:15px;'+
+        'left:15px;'+
+        'z-index:10000;'+
+        'background:rgba(255,255,255,0.95);'+
+        'border:1px solid #ccc;'+
+        'padding:5px 8px;'+
+        'border-radius:6px;'+
+        'font-family:sans-serif;'+
+        'font-size:12px;'+
+        'cursor:pointer;'+
+        'box-shadow:0 2px 6px rgba(0,0,0,0.2);';
+    document.body.appendChild(toggleBtn);
+
     let panel=document.createElement('div');
 
     panel.style.cssText=
         'position:fixed;'+
-        'top:15px;'+
+        'top:50px;'+
         'left:15px;'+
         'z-index:9999;'+
         'background:rgba(255,255,255,0.92);'+
@@ -217,6 +235,19 @@ window.addEventListener('load',function() {
         'box-shadow:0 4px 12px rgba(0,0,0,0.25);'+
         'width:280px;'+
         'font-size:12px;';
+
+    // Responsive logic: Collapse/hide by default if the window is small
+    let isSmallScreen = (window.innerWidth < 600 || window.innerHeight < 500);
+    panel.style.display = isSmallScreen ? 'none' : 'block';
+
+    // Toggle panel visibility on button click
+    toggleBtn.onclick=function() {
+        if(panel.style.display==='none') {
+            panel.style.display='block';
+        } else {
+            panel.style.display='none';
+        }
+    };
 
     panel.innerHTML=
         '<b style=\"display:block;'+
