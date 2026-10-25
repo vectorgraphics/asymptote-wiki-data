@@ -1,1 +1,0 @@
-This is module smoothmanifold. It is designed to construct and render high-quality Asymptote figures that display sets as 2D or 3D surfaces on the plane.
