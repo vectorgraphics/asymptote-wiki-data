@@ -39,11 +39,12 @@ draw(pos -- (pos + dir1), purple);
 draw(pos -- (pos + dir2), green);
 
 // pair cp = (pos + 2 * radius * dir(angle));
-pair cp = (3.1, 1.5);
+pair cp = (3.18299236741329,1.5849310419317);
+// pair cp = (3.1, 1.5);
 
 dot(cp, blue+2);
 
-// write(cp);
+write(cp);
 
 // path gs = pos{dir1} .. (pos + 2 * radius * (1+.1*unitrand())*dir(angle)) .. {dir2}pos;
 path gs = pos{dir1} .. cp .. {dir2}cycle;
