@@ -38,8 +38,8 @@ pair dir2 = (-.3,-1);
 // draw(pos -- (pos + dir1), purple);
 // draw(pos -- (pos + dir2), green);
 
-pair cp = (pos + 2 * radius * dir(angle));
-// pair cp = (3.18299236741329,1.5849310419317);
+// pair cp = (pos + 2 * radius * dir(angle));
+pair cp = (3.18299236741329,1.5849310419317);
 // pair cp = (3.1, 1.5);
 
 dot(cp, blue+2);
