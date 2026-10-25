@@ -1,6 +1,6 @@
 import plain_pens;
 import palette;
-import "../Jacobi Functions/Jacobi theta functions and Weierstrass p-function/jacobi.asy" as jacobi;
+import "Jacobi Functions/Jacobi theta functions and Weierstrass p-function/jacobi.asy" as jacobi;
 size(1024, 1024);
 
 pen colormap1(pair z) {

@@ -1,1 +1,1 @@
-This example of the elliptic lambda function $\lambda(\tau)$ shows how to import another module from the wiki.
+This example of the elliptic lambda function $\lambda(\tau)$ shows how to import the jacobi module from the wiki.
