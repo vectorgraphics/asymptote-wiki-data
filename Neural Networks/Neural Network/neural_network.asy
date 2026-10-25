@@ -1,5 +1,3 @@
-settings.prc = false;
-settings.render = 0;
 unitsize(0.5cm);
 
 real node_radius = 1;
