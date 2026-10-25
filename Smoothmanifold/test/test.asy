@@ -26,11 +26,11 @@ size(7cm);
 //     return (path)(res{outdir}..{indir}controlpoints[controlpoints.length-1]);
 // }
 
-// pair pos = (1,1);
+pair pos = (1,1);
 
-// real angle = 15;
-// real radius = 1.13;
-// real range = 30;
+real angle = 15;
+real radius = 1.13;
+real range = 30;
 
 // pair dir1 = (1,-.5);
 // pair dir2 = (-.3,-1);
@@ -38,8 +38,8 @@ size(7cm);
 // draw(pos -- (pos + dir1), purple);
 // draw(pos -- (pos + dir2), green);
 
-// pair cp = (pos + 2 * radius * dir(angle));
-pair cp = (3.18299236741329,1.5849310419317);
+pair cp = (pos + 2 * radius * dir(angle));
+// pair cp = (3.18299236741329,1.5849310419317);
 // pair cp = (3.1, 1.5);
 
 dot(cp, blue+2);
