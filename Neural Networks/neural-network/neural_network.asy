@@ -1,4 +1,3 @@
-settings.outformat = "pdf";
 settings.prc = false;
 settings.render = 0;
 unitsize(0.5cm);

@@ -1,6 +1,5 @@
 import graph3;
 
-settings.outformat="html";
 
 size(10cm);
 defaultpen(fontsize(5));

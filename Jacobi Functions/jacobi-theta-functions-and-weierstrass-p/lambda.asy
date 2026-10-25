@@ -1,4 +1,3 @@
-settings.outformat = "eps";
 import plain_pens;
 import palette;
 import jacobi;

@@ -1,4 +1,3 @@
-settings.outformat = "eps";
 import plain_pens;
 import palette;
 size(1024, 1024);
