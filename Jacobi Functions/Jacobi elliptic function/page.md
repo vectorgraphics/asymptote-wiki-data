@@ -1,0 +1,1 @@
+Implementation of the Jacobi theta functions ($\theta_1$ through $\theta_4$) and their logarithmic derivatives, with a self-test of the `jacobi` module. Contributed by [Stéphane Laurent](https://github.com/stla) via [asymptote issue #318](https://github.com/vectorgraphics/asymptote/issues/318).
