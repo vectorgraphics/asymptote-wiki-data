@@ -1,0 +1,1 @@
+It is designed to construct and render high-quality Asymptote figures that display sets as 2D or projected 3D surfaces on the plane.
