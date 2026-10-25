@@ -25,10 +25,6 @@ path randompath (pair[] controlpoints, real angle)
     
     return (path)(res{outdir}..{indir}controlpoints[controlpoints.length-1]);
 }
-// import smoothmanifold;
-
-
-// element elt = sm1.elements[index1];
 
 pair pos = (1,1);
 
@@ -36,13 +32,8 @@ real angle = 15;
 real radius = 1.13;
 real range = 30;
 
-// if (dummy(angle))
-// { angle = degrees(-elt.labelalign, warn = false); }
-// if (dummy(radius))
-// { radius = .05*radius(sm1.contour); }
-
-pair dir1 = randomdir(dir(angle-range), range);
-pair dir2 = -randomdir(dir(angle+range), range);
+pair dir1 = (1,-.5);
+pair dir2 = (-.3,-1);
 
 draw(pos -- (pos + dir1), purple);
 draw(pos -- (pos + dir2), green);
@@ -60,4 +51,3 @@ path gs = pos{dir1} .. cp .. {dir2}cycle;
 draw((0,0)--(3,3));
 
 draw(gs, red);
-// draw(randompath(new pair[]{(1,1),(2,1),(2.4,1.8)}, 30));
