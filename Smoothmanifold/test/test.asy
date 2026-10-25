@@ -32,8 +32,8 @@ real angle = 15;
 real radius = 1.13;
 real range = 30;
 
-// pair dir1 = (1,-.5);
-// pair dir2 = (-.3,-1);
+pair dir1 = (1,-.5);
+pair dir2 = (-.3,-1);
 
 // draw(pos -- (pos + dir1), purple);
 // draw(pos -- (pos + dir2), green);
@@ -47,8 +47,8 @@ dot(cp, blue+2);
 write(cp);
 
 // path gs = pos{dir1} .. (pos + 2 * radius * (1+.1*unitrand())*dir(angle)) .. {dir2}pos;
-path gs = (0,0){(1,0)} .. cp .. {(0,-1)}cycle;
+path gs = (0,0){dir1} .. cp .. {dir2}cycle;
 
-// draw((0,0)--(3,3));
+draw((0,0)--(3,3));
 
 draw(gs, red);
