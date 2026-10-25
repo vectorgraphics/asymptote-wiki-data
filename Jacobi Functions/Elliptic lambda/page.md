@@ -1,0 +1,1 @@
+The elliptic lambda function $\lambda(\tau)$, visualized over the unit disk, using the `jacobi` module. Contributed by [Stéphane Laurent](https://github.com/stla) via [asymptote issue #318](https://github.com/vectorgraphics/asymptote/issues/318).

@@ -1,0 +1,1 @@
+The Weierstrass elliptic $\wp$ function, visualized over the fundamental parallelogram, using the `jacobi` module. Contributed by [Stéphane Laurent](https://github.com/stla) via [asymptote issue #318](https://github.com/vectorgraphics/asymptote/issues/318).
