@@ -47,7 +47,7 @@ dot(cp, blue+2);
 write(cp);
 
 // path gs = pos{dir1} .. (pos + 2 * radius * (1+.1*unitrand())*dir(angle)) .. {dir2}pos;
-path gs = (0,0){dir1} .. cp .. {dir2}cycle;
+path gs = pos{dir1} .. cp .. {dir2}cycle;
 
 draw((0,0)--(3,3));
 
