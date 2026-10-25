@@ -49,6 +49,6 @@ write(cp);
 // path gs = pos{dir1} .. (pos + 2 * radius * (1+.1*unitrand())*dir(angle)) .. {dir2}pos;
 path gs = pos{dir1} .. cp .. {dir2}cycle;
 
-draw((0,0)--(3,3));
+// draw((0,0)--(3,3));
 
 draw(gs, red);
