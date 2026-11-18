@@ -340,7 +340,7 @@ string[][] ss (... string[] source)
 { return new string[][]{source}; }
 
 string repeatstring (string str, int n) {
-    if (n == 0) return "";
+    if (n <= 0) return "";
     return repeatstring(str, n-1) + str;
 }
 
@@ -348,6 +348,7 @@ string repeatstring (string str, int n) {
 
 // Same as the standard Asymptote `concat` functions, but with more than two arguments.
 pair[] concat (pair[][] a) {
+    if (a.length == 0) return new pair[];
     if (a.length == 1) return a[0];
     pair[] b = a.pop();
     return concat(concat(a), b);
@@ -360,6 +361,7 @@ path[] concat (path[][] a) {
 }
 
 real[] unitseq (real step) {
+    if (step <= 0 || step > 1) return new real[];
     real[] res;
     real cur = step;
     while (cur < 1)
@@ -1405,8 +1407,9 @@ struct hole
             this.sections = sections;
             this.scnumber = scnumber;
         } else {
-            this.contour = shift(shift)*srap(scale, rotate, point)*contour;
-            this.center = center;
+            transform t = shift(shift)*srap(scale, rotate, point);
+            this.contour = t*contour;
+            this.center = dummy(center) ? center : t*center;
             this.scnumber = scnumber;
             this.sections = new real[][];
             for (int i = 0; i < sections.length; ++i) {
@@ -1507,8 +1510,9 @@ struct subset
             this.isderivative = isderivative;
             this.isonboundary = isonboundary;
         } else {
-            this.contour = shift(shift)*srap(scale, rotate, point)*contour;
-            this.center = center;
+            transform t = shift(shift)*srap(scale, rotate, point);
+            this.contour = t*contour;
+            this.center = dummy(center) ? center : t*center;
             this.label = label;
             this.labeldir = labeldir;
             this.labelalign = labelalign;
@@ -2039,7 +2043,7 @@ struct smooth
         { this.elements[i].move(shift, scale, rotate, point, true); }
 
         if (drag) for (int i = 0; i < this.attached.length; ++i)
-        { this.attached[i].move(shift, scale, rotate, point, drag); }
+        { this.attached[i].move(shift, scale, rotate, point, readjust, true); }
         
         return this;
     }
