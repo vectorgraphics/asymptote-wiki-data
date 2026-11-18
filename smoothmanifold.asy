@@ -30,7 +30,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 // >config | Configuration structures
 
 struct systemconfig {
-    string version = "v6.5.0";
+    string version = "v6.6.0";
     int dummynumber = -10000;
     string dummystring = (string) dummynumber;
     pair dummypair = (dummynumber, dummynumber);
@@ -242,9 +242,9 @@ path usquare = (1,1) -- (-1,1) -- (-1,-1) -- (1,-1) -- cycle; // [U]nit [S]quare
 real mod (real a, real b)
 // Calculate a % b.
 {
-    if (b < 0) return -1;
+    if (b <= 0) return -1;
     while (a < 0) a += b;
-    while (a > b) a -= b;
+    while (a >= b) a -= b;
     return a;
 }
 
@@ -648,6 +648,7 @@ path[] combination (path p, path q, int mode, bool round, real roundcoeff)
     }
     
     int n = times.length;
+    if (n == 0) return new path[];
 
     int[] pinds = sort(sequence(n), new bool (int a, int b){return (times[a][1] <= times[b][1]);});
     int[] qinds = sort(sequence(n), new bool (int a, int b){return (times[pinds[a]][0] <= times[pinds[b]][0]);});
@@ -1416,13 +1417,16 @@ struct hole
         }
     }
 
-    hole copy ()
-    { return hole(this.contour, this.center, copy(this.sections), copy = true); }
+    hole copy () {
+        hole res = hole(this.contour, this.center, copy(this.sections), scnumber = this.scnumber, copy = true);
+        return res;
+    }
 
-    hole replicate (hole h) { 
+    hole replicate (hole h) {
         this.contour = h.contour;
         this.center = h.center;
-        this.sections = h.sections;
+        this.sections = copy(h.sections);
+        this.scnumber = h.scnumber;
 
         return this;
     }
@@ -1515,7 +1519,9 @@ struct subset
     }
     
     subset copy () {
-        return subset(this.contour, this.center, this.label, this.labeldir, this.labelalign, this.layer, this.isderivative, this.isonboundary, copy = true);
+        subset res = subset(this.contour, this.center, this.label, this.labeldir, this.labelalign, this.layer, this.isderivative, this.isonboundary, copy = true);
+        res.subsets = copy(this.subsets);
+        return res;
     }
 
     subset replicate (subset s)
@@ -1559,11 +1565,24 @@ subset[] subsetintersection (subset sb1, subset sb2, bool inferlabels = config.s
 
 void subsetdelete (subset[] subsets, int index, bool recursive)
 {
-    subset cursb = subsets[index];
+    if (index < 0 || index >= subsets.length) return;
+
     if (recursive) {
-        for (int i = 0; i < cursb.subsets.length; ++i)
-        { subsetdelete(subsets, cursb.subsets[i], recursive); }
+        int[] descendants;
+        void collect (int i) {
+            for (int j = 0; j < subsets[i].subsets.length; ++j)
+            { collect(subsets[i].subsets[j]); }
+            descendants.push(i);
+        }
+        collect(index);
+
+        int[] indices = sort(descendants);
+        for (int i = indices.length-1; i >= 0; --i) {
+            if (indices[i] == index) continue;
+            subsetdelete(subsets, indices[i], false);
+        }
     }
+
     subsets.delete(index);
     for (int i = 0; i < subsets.length; ++i) {
         for (int j = 0; j < subsets[i].subsets.length; ++j) {
@@ -2005,8 +2024,9 @@ struct smooth
         if (scale <= 0)
         { halt("Could not move: scale value must be positive. [ move() ]"); }
 
-        this.contour = shift(shift)*srap(scale, rotate, point)*this.contour;
-        this.center = shift(shift)*rotate(rotate, point)*this.center;
+        transform t = shift(shift)*srap(scale, rotate, point);
+        this.contour = t*this.contour;
+        this.center = t*this.center;
         this.labeldir = rotate(rotate)*this.labeldir;
         
         if (readjust) this.unitadjust = this.selfadjust();
@@ -2217,7 +2237,7 @@ struct smooth
         { halt("Could not set element: label \""+label+"\" already assigned. [ setelement() ]"); }
         
         if (!dummy(pos)) {
-            if (unit) { pos = this.adjust(index)*pos; }
+            if (unit) { pos = this.adjust(sbindex)*pos; }
             this.elements[index].pos = pos;
         }
         if (!dummy(label)) this.elements[index].label = label;
@@ -2230,7 +2250,7 @@ struct smooth
         string destlabel,
         element elt,
         bool unit = config.smooth.unit
-    ) { return this.setelement(findlocalelementindex(destlabel), elt, unit); }
+    ) { return this.setelement(findlocalelementindex(destlabel), elt, -1, unit); }
 
     smooth setelement (
         string destlabel,
@@ -2238,7 +2258,7 @@ struct smooth
         string label = config.system.dummystring,
         pair labelalign = config.system.dummypair,
         bool unit = config.smooth.unit
-    ) { return this.setelement(findlocalelementindex(destlabel), pos, label, labelalign, unit); }
+    ) { return this.setelement(findlocalelementindex(destlabel), pos, label, labelalign, -1, unit); }
 
     smooth rmelement (int index) {
         this.elements.delete(index);
@@ -3105,8 +3125,10 @@ struct smooth
             this.labelalign = labelalign;
             this.holes = holecopy(holes);
             this.subsets = subsetcopy(subsets);
-            this.hratios = hratios;
-            this.vratios = vratios;
+            this.elements = elementcopy(elements);
+            this.unitadjust = shift(this.center) * scale(radius(this.contour));
+            this.hratios = copy(hratios);
+            this.vratios = copy(vratios);
             this.attached = attached;
             this.isderivative = isderivative;
             this.drawextra = drawextra;
@@ -3155,10 +3177,11 @@ struct smooth
             holes = holecopy(this.holes),
             subsets = subsetcopy(this.subsets),
             elements = elementcopy(this.elements),
-            hratios = this.hratios,
-            vratios = this.vratios,
+            hratios = copy(this.hratios),
+            vratios = copy(this.vratios),
             attached = this.attached,
             drawextra = this.drawextra,
+            isderivative = this.isderivative,
             copy = true
         );
     }
@@ -3172,9 +3195,10 @@ struct smooth
         this.subsets = subsetcopy(sm.subsets);
         this.elements = elementcopy(sm.elements);
         this.unitadjust = sm.unitadjust;
-        this.hratios = sm.hratios;
-        this.vratios = sm.vratios;
+        this.hratios = copy(sm.hratios);
+        this.vratios = copy(sm.vratios);
         this.attached = sequence(new smooth (int i){return sm.attached[i].copy();}, sm.attached.length);
+        this.isderivative = sm.isderivative;
         this.drawextra = sm.drawextra;
 
         return this;
@@ -4947,10 +4971,10 @@ void drawcommuting (
 
     pair center = (1/sms.length)*sum(sequence(new pair (int i){ return sms[i].center; }, sms.length));
     real angd2 = 40;
-    if (direction == CCW) angd2 - angd2;
+    if (direction == CCW) angd2 = -angd2;
     real deg = degrees(sms[0].center - center);
     pair vec1 = size*dir(deg - angd2);
-    pair vec2 = dir(deg + angd2);
+    pair vec2 = size*dir(deg + angd2);
 
     draw(pic, arc(center, center+vec1, center+vec2, direction), p = p, arrow = ArcArrow(SimpleHead));
 }
@@ -5148,7 +5172,7 @@ void drawarrow (
         { finish = sm2.elements[indices2[2]].pos; }
     }
 
-    drawarrow(pic, sm1, index1, start, sm2, index2, finish, curve, angle, radius, points, L, p, arrow, bar, help, overlap, drawnow, beginmargin, endmargin);
+    drawarrow(pic = pic, sm1 = sm1, index1 = index1, start = start, sm2 = sm2, index2 = index2, finish = finish, curve = curve, angle = angle, radius = radius, reverse = reverse, points = points, L = L, p = p, arrow = arrow, bar = bar, help = help, overlap = overlap, drawnow = drawnow, beginmargin = beginmargin, endmargin = endmargin);
 }
 
 void drawpath (
@@ -5239,7 +5263,24 @@ void drawpath (
         index2 = indices2[1];
     }
 
-    drawpath(pic, sm1, index1, sm2, index2, range, angle, radius, reverse, points, L, p, help, overlap, drawnow);
+    drawpath(
+        pic = pic,
+		sm1 = sm1,
+		index1 = index1,
+		sm2 = sm2,
+		index2 = index2,
+		range = range,
+		angle = angle,
+		radius = radius,
+		reverse = reverse,
+		points = points,
+		L = L,
+		p = p,
+		help = help,
+		random = config.drawing.pathrandom,
+		overlap = overlap,
+		drawnow = drawnow
+    );
 }
 
 // >drawing | delayed drawing implementation
