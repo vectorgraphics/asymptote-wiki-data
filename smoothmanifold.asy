@@ -1420,10 +1420,8 @@ struct hole
         }
     }
 
-    hole copy () {
-        hole res = hole(this.contour, this.center, copy(this.sections), scnumber = this.scnumber, copy = true);
-        return res;
-    }
+    hole copy ()
+    { return hole(this.contour, this.center, copy(this.sections), scnumber = this.scnumber, copy = true); }
 
     hole replicate (hole h) {
         this.contour = h.contour;
@@ -1798,35 +1796,35 @@ struct dpar
         bool drawextraover = this.drawextraover
     ) // Create a new dpar with some attributes changed.
     {
-        this.contourpen = contourpen;
-        this.smoothfill = smoothfill;
-        this.subsetcontourpens = subsetcontourpens;
-        this.subsetfill = subsetfill;
-        this.sectionpen = sectionpen;
-        this.dashpen = dashpen;
-        this.shadepen = shadepen;
-        this.elementpen = elementpen;
-        this.labelpen = labelpen;
-        this.elementlabelpens = elementlabelpens;
-        this.subsetlabelpens = subsetlabelpens;
-        this.mode = mode;
-        this.viewdir = viewdir;
-        this.drawlabels = drawlabels;
-        this.fill = fill;
-        this.fillsubsets = fillsubsets;
-        this.drawcontour = drawcontour;
-        this.drawsubsetcontour = drawsubsetcontour;
-        this.subsetcovermode = subsetcovermode;
-        this.help = help;
-        this.dash = dash;
-        this.shade = shade;
-        this.avoidsubsets = avoidsubsets;
-        this.overlap = overlap;
-        this.smoothoverlap = smoothoverlap;
-        this.drawnow = drawnow;
-        this.drawextraover = drawextraover;
-
-        return this;
+        return dpar(
+            contourpen = contourpen,
+            smoothfill = smoothfill,
+            subsetcontourpens = subsetcontourpens,
+            subsetfill = subsetfill,
+            sectionpen = sectionpen,
+            dashpen = dashpen,
+            shadepen = shadepen,
+            elementpen = elementpen,
+            labelpen = labelpen,
+            elementlabelpens = elementlabelpens,
+            subsetlabelpens = subsetlabelpens,
+            mode = mode,
+            viewdir = viewdir,
+            drawlabels = drawlabels,
+            fill = fill,
+            fillsubsets = fillsubsets,
+            drawcontour = drawcontour,
+            drawsubsetcontour = drawsubsetcontour,
+            subsetcovermode = subsetcovermode,
+            help = help,
+            dash = dash,
+            shade = shade,
+            avoidsubsets = avoidsubsets,
+            overlap = overlap,
+            smoothoverlap = smoothoverlap,
+            drawnow = drawnow,
+            drawextraover = drawextraover
+        );
     }
 }
 
@@ -2050,21 +2048,27 @@ struct smooth
 
     void xscale (real s)
     {
+        transform t = scale(s,1);
+
         pair center = this.center;
         this.move(shift = -center, drag = false);
-        this.contour = scale(s,1)*this.contour;
+        this.contour = t*this.contour;
+        this.labeldir = t*this.labeldir;
         
         for (hole hl : this.holes) {
-            hl.contour = scale(s,1)*hl.contour;
-            hl.center = scale(s,1)*hl.center;
+            hl.contour = t*hl.contour;
+            hl.center = t*hl.center;
 
             for (real[] sc : hl.sections)
-            { sc[0] = degrees(scale(s,1)*dir(sc[0])); }
+            { sc[0] = degrees(t*dir(sc[0])); }
         }
         for (subset sb : this.subsets) {
-            sb.contour = scale(s,1) * sb.contour;
-            sb.center = scale(s,1) * sb.center;
-            sb.labeldir = scale(1,s) * sb.labeldir;
+            sb.contour = t * sb.contour;
+            sb.center = t * sb.center;
+            sb.labeldir = t * sb.labeldir;
+        }
+        for (element elt : this.elements) {
+            elt.pos = t * elt.pos;
         }
 
         this.move(shift = center, drag = false);
@@ -2497,7 +2501,7 @@ struct smooth
         pair point = this.holes[index].center,
         bool movesections = false
     ) {
-        transform t = srap(scale, rotate, point) * shift(shift);
+        transform t = shift(shift) * srap(scale, rotate, point);
         path newcontour = t * this.holes[index].contour;
 
         bool outofbounds = false;
@@ -2877,8 +2881,9 @@ struct smooth
         int[] indices,
         bool recursive = true
     ) {
-        for (int i = indices.length-1; i >= 0; i -= 1)
-        { this.rmsubset(indices[i], recursive); }
+        int[] sorted = sort(indices);
+        for (int i = sorted.length-1; i >= 0; i -= 1)
+        { this.rmsubset(sorted[i], recursive); }
         return this;
     }
 
@@ -3127,12 +3132,12 @@ struct smooth
             this.label = label;
             this.labeldir = labeldir;
             this.labelalign = labelalign;
-            this.holes = holecopy(holes);
-            this.subsets = subsetcopy(subsets);
-            this.elements = elementcopy(elements);
+            this.holes = holes;
+            this.subsets = subsets;
+            this.elements = elements;
             this.unitadjust = shift(this.center) * scale(radius(this.contour));
-            this.hratios = copy(hratios);
-            this.vratios = copy(vratios);
+            this.hratios = hratios;
+            this.vratios = vratios;
             this.attached = attached;
             this.isderivative = isderivative;
             this.drawextra = drawextra;
@@ -3140,8 +3145,9 @@ struct smooth
             if (scale <= 0)
             { halt("Could not build: scale value must be positive. [ smooth() ]"); }
             
-            this.contour = shift(shift)*srap(scale, rotate, point)*contour;
-            this.center = shift(shift)*center;
+            transform t = shift(shift)*srap(scale, rotate, point);
+            this.contour = t*contour;
+            this.center = t*center;
             if (!config.system.repeatlabels && label != "" && smooth.repeats(label)) {
                 halt("Could not build smooth object: entities with label \""+label+"\" already present. [ smooth() ]");
             }
@@ -3184,8 +3190,8 @@ struct smooth
             hratios = copy(this.hratios),
             vratios = copy(this.vratios),
             attached = this.attached,
-            drawextra = this.drawextra,
             isderivative = this.isderivative,
+            drawextra = this.drawextra,
             copy = true
         );
     }
@@ -3962,8 +3968,10 @@ smooth[] intersection (
         for (int i = 0; i < cursm.subsets.length; ++i) {
             if (cursm.subsets[i].layer > 0) break;
 
-            if (!inside(cursm.contour, cursm.subsets[i].center))
-            { subsetdelete(cursm.subsets, i, true); }
+            if (!inside(cursm.contour, cursm.subsets[i].center)) {
+                subsetdelete(cursm.subsets, i, true);
+                i -= 1;
+            }
         }
 
         bool[] subsetsadded = array(subsets2.length, false);
@@ -4263,6 +4271,8 @@ smooth unite (
 ) // An alternative to `union` that only returns one smooth object, if there is only one.
 {
     smooth[] union = union(sms, keepdata, round, roundcoeff);
+    if (union.length < 1)
+    { halt("empty array of `smooth` objects. [ unite() ]"); }
     if (union.length > 1) 
     { write("> ? Union produced more than one object. Returning only the 0-th one. [ unite() ]"); }
     return union[0];
@@ -4273,7 +4283,7 @@ smooth unite (
     bool round = false,
     real roundcoeff = config.paths.roundcoeff
     ... smooth[] sms
-) { return union(sms, keepdata, round, roundcoeff)[0]; }
+) { return unite(sms, keepdata, round, roundcoeff); }
 
 smooth operator + (smooth sm1, smooth sm2) { return unite(sm1, sm2); }
 
@@ -4376,8 +4386,8 @@ The `covermode` parameter needs additional explanation. It determines what happe
             for (int j = 0; j < g.length; ++j) {
                 real[] aligntest = intersect(g[j], gs);
                 if (aligntest.length == 0) {
-                    bool inside;
-                    if (!gscyclic || !(inside = inside(gs, beginpoint(g[j]))) || covermode < 3) {
+                    bool inside = false;
+                    if (!gscyclic || !(inside = inside(gs, beginpoint(g[j]))) || covermode < 2) {
                         newg.push(g[j]);
                         newunder.push(under(inside, curdp[i].under[j]));
                     }
@@ -4388,8 +4398,8 @@ The `covermode` parameter needs additional explanation. It determines what happe
 
                 real[] cuttimes = new real[] {0};
                 bool[] skipped = array(2*(times.length+1), value = false);
-                real t1;
-                real t2;
+                real t1 = 0;
+                real t2 = 0;
                 real t3 = -1;
 
                 gjcyclic = gjcyclic && cyclic(g[j]);
@@ -4423,7 +4433,6 @@ The `covermode` parameter needs additional explanation. It determines what happe
                     cuttimes.pop();
                 } else if (t3 >= 0) {
                     if (t3 <= t2) cuttimes.pop();
-                    // else cuttimes.insert(cuttimes.length-1, t3);
                     else cuttimes.push(t3);
                 } else if (cuttimes.length % 2 == 1) {
                     if (gjcyclic)
@@ -4978,7 +4987,7 @@ void drawcommuting (
     if (direction == CCW) angd2 = -angd2;
     real deg = degrees(sms[0].center - center);
     pair vec1 = size*dir(deg - angd2);
-    pair vec2 = size*dir(deg + angd2);
+    pair vec2 = dir(deg + angd2);
 
     draw(pic, arc(center, center+vec1, center+vec2, direction), p = p, arrow = ArcArrow(SimpleHead));
 }
@@ -5301,6 +5310,9 @@ void drawdelayed (
 
         int startind = 0;
         int finishind = g.length-1;
+    
+        if (finishind < startind) return;
+
         pen underp = underpen(p);
 
         bool beginarrow = arrow == null || arrow.begin;
